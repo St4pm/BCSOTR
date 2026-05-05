@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blaine County Sheriff's Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Oswald:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c96b;
+    --gold-dark: #8b6914;
+    --bronze: #8b7040;
+    --dark-bg: #0a0804;
+    --dark-surface: #120f08;
+    --dark-card: #1a1508;
+    --dark-border: #2a2010;
+    --text-primary: #e8d8b0;
+    --text-secondary: #a08040;
+    --text-muted: #604830;
+    --leather: #1e130a;
+    --star-gold: #d4a843;
+  }
+ 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  body {
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    font-family: 'Crimson Text', serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+ 
+  /* Custom cursor glow */
+  .cursor-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+  }
+ 
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+ 
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 2rem;
+  }
+ 
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.18;
+    z-index: 0;
+  }
+ 
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at center top, rgba(201,168,76,0.08) 0%, transparent 60%),
+      linear-gradient(to bottom, rgba(10,8,4,0.3) 0%, rgba(10,8,4,0.5) 50%, rgba(10,8,4,0.95) 100%);
+    z-index: 1;
+  }
+ 
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  /* 3D ROZET CSS */
+  .badge-perspective {
+    perspective: 2000px;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .badge-model {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: badgeFinalRotate 15s linear infinite; 
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .badge-perspective:hover .badge-model {
+    animation-play-state: paused;
+    transform: rotateY(0deg) rotateX(10deg) scale(1.1);
+  }
+
+  .badge-layer {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://i.hizliresim.com/17edbil.png');
+    background-size: 102% 102%;
+    background-repeat: no-repeat;
+    background-position: center;
+    clip-path: circle(49% at 50% 50%); 
+    filter: sepia(0.25) contrast(1.15); 
+  }
+
+  .front {
+    transform: translateZ(10px);
+    filter: sepia(0) contrast(1.2) brightness(1.15);
+  }
+
+  .back {
+    transform: translateZ(-10px) rotateY(180deg);
+    filter: brightness(0.35) sepia(0.3);
+  }
+
+  .side-1 { transform: translateZ(8px); filter: brightness(0.8) sepia(0.3); }
+  .side-2 { transform: translateZ(6px); filter: brightness(0.7) sepia(0.3); }
+  .side-3 { transform: translateZ(4px); filter: brightness(0.6) sepia(0.3); }
+  .side-4 { transform: translateZ(2px); filter: brightness(0.5) sepia(0.3); }
+  .side-5 { transform: translateZ(0px); filter: brightness(0.45) sepia(0.3); }
+  .side-6 { transform: translateZ(-2px); filter: brightness(0.4) sepia(0.3); }
+  .side-7 { transform: translateZ(-4px); filter: brightness(0.38) sepia(0.3); }
+  .side-8 { transform: translateZ(-6px); filter: brightness(0.35) sepia(0.3); }
+  .side-9 { transform: translateZ(-8px); filter: brightness(0.32) sepia(0.3); }
+
+  .metal-glint {
+    position: absolute;
+    inset: 1px;
+    transform: translateZ(11px);
+    background: linear-gradient(135deg, transparent 35%, rgba(255,255,255,0.15) 50%, transparent 65%);
+    background-size: 200% 200%;
+    clip-path: circle(49% at 50% 50%);
+    animation: glintEffect 15s linear infinite; 
+    pointer-events: none;
+  }
+
+  .badge-shadow-glow {
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.25);
+    filter: blur(25px);
+    transform: translateZ(-15px);
+    pointer-events: none;
+  }
+
+  @keyframes badgeFinalRotate {
+    0% { transform: rotateX(6deg) rotateY(0deg); }
+    100% { transform: rotateX(6deg) rotateY(360deg); }
+  }
+
+  @keyframes glintEffect {
+    0% { background-position: -200% -200%; }
+    100% { background-position: 200% 200%; }
+  }
+ 
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    line-height: 1.1;
+    text-shadow: 0 0 60px rgba(201,168,76,0.3);
+    animation: fadeInUp 1s ease forwards;
+  }
+ 
+  .hero-divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    animation: fadeInUp 1s ease 0.5s both;
+  }
+ 
+  .hero-tagline {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: var(--text-secondary);
+    max-width: 600px;
+    animation: fadeInUp 1s ease 0.7s both;
+  }
+ 
+  .hero-scroll {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    animation: bounce 2s ease infinite;
+  }
+ 
+  .hero-scroll::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold-dark), transparent);
+  }
+ 
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+ 
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,8,4,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--dark-border);
+    padding: 0 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+ 
+  nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+  }
+ 
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+  }
+ 
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+ 
+  .nav-links a {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    text-transform: uppercase;
+    position: relative;
+    transition: color 0.3s;
+  }
+ 
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--gold);
+    transition: width 0.3s;
+  }
+ 
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+ 
+  .nav-cta {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--dark-bg);
+    background: var(--gold);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    transition: background 0.3s, transform 0.2s;
+  }
+ 
+  .nav-cta:hover {
+    background: var(--gold-light);
+    transform: scale(1.03);
+  }
+ 
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+ 
+  .section-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.5em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+ 
+  .section-label::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--gold-dark);
+  }
+ 
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+ 
+  .section-body {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    max-width: 700px;
+  }
+ 
+  /* ABOUT GRID */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+ 
+  .about-image-wrap {
+    position: relative;
+  }
+ 
+  .about-image-wrap img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    filter: sepia(0.4) contrast(1.1);
+    border: 1px solid var(--dark-border);
+  }
+ 
+  .about-image-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border: 1px solid var(--dark-border);
+    pointer-events: none;
+  }
+ 
+  .about-image-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, var(--dark-bg), transparent);
+    pointer-events: none;
+  }
+ 
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+ 
+  .stat-card {
+    border: 1px solid var(--dark-border);
+    padding: 1.5rem;
+    position: relative;
+    background: var(--dark-card);
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: default;
+  }
+ 
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: width 0.4s;
+  }
+ 
+  .stat-card:hover { border-color: var(--gold-dark); transform: translateY(-3px); }
+  .stat-card:hover::before { width: 100%; }
+ 
+  .stat-number {
+    font-family: 'Cinzel', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+ 
+  .stat-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+ 
+  /* OFFICERS GALLERY */
+  .officers-section {
+    background: var(--dark-surface);
+    padding: 6rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .officers-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+  }
+ 
+  .officers-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+ 
+  .officers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+ 
+  .officer-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--dark-border);
+    cursor: default;
+  }
+ 
+  .officer-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    filter: sepia(0.3) contrast(1.05);
+    transition: transform 0.5s, filter 0.5s;
+    display: block;
+  }
+ 
+  .officer-card:hover img {
+    transform: scale(1.04);
+    filter: sepia(0.1) contrast(1.1);
+  }
+ 
+  .officer-card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 1.5rem;
+    background: linear-gradient(to top, rgba(10,8,4,0.95) 0%, transparent 100%);
+    transform: translateY(0);
+    transition: transform 0.3s;
+  }
+ 
+  .officer-card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 0.25rem;
+  }
+ 
+  .officer-card-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+ 
+  /* DIVIDER LINE */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--dark-border), transparent);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+ 
+  /* MISSION STATEMENT */
+  .mission-block {
+    position: relative;
+    padding: 4rem;
+    border: 1px solid var(--dark-border);
+    background: var(--dark-card);
+    margin-top: 3rem;
+    text-align: center;
+  }
+ 
+  .mission-block::before,
+  .mission-block::after {
+    content: '✦';
+    position: absolute;
+    color: var(--gold-dark);
+    font-size: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+ 
+  .mission-block::before { left: 1.5rem; }
+  .mission-block::after { right: 1.5rem; }
+ 
+  .mission-text {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+ 
+  /* MANUAL / KITAPÇIK MODAL */
+  .manual-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    color: var(--dark-bg);
+    background: var(--gold);
+    border: none;
+    padding: 1rem 2.5rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 2rem;
+  }
+ 
+  .manual-btn:hover {
+    background: var(--gold-light);
+    transform: scale(1.03);
+  }
+ 
+  .manual-btn .btn-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--dark-bg);
+  }
+ 
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+ 
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+ 
+  .modal {
+    background: var(--dark-surface);
+    border: 1px solid var(--dark-border);
+    max-width: 860px;
+    width: 100%;
+    position: relative;
+    transform: translateY(40px) scale(0.97);
+    transition: transform 0.4s;
+    margin: auto;
+  }
+ 
+  .modal-backdrop.open .modal {
+    transform: translateY(0) scale(1);
+  }
+ 
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--dark-bg), var(--gold), var(--dark-bg));
+  }
+ 
+  .modal-header {
+    padding: 2.5rem 3rem 1.5rem;
+    border-bottom: 1px solid var(--dark-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+ 
+  .modal-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+ 
+  .modal-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+  }
+ 
+  .modal-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+ 
+  .modal-close {
+    background: none;
+    border: 1px solid var(--dark-border);
+    width: 40px;
+    height: 40px;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s, color 0.3s;
+    flex-shrink: 0;
+  }
+ 
+  .modal-close:hover { border-color: var(--gold-dark); color: var(--gold); }
+ 
+  .modal-body {
+    padding: 2rem 3rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+ 
+  .procedure-card {
+    border-left: 2px solid var(--gold-dark);
+    padding: 1.5rem 2rem;
+    background: var(--dark-card);
+    position: relative;
+    transition: border-left-color 0.3s;
+  }
+ 
+  .procedure-card:hover { border-left-color: var(--gold); }
+ 
+  .procedure-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .procedure-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+ 
+  .procedure-body {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-secondary);
+  }
+ 
+  .procedure-alert {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(201,168,76,0.2);
+    background: rgba(201,168,76,0.05);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+ 
+  .procedure-alert::before {
+    content: '⚡';
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+ 
+  /* FOOTER */
+  footer {
+    background: var(--leather);
+    border-top: 1px solid var(--dark-border);
+    padding: 3rem 4rem;
+    text-align: center;
+    position: relative;
+  }
+ 
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+  }
+ 
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gold-dark);
+    letter-spacing: 0.3em;
+    margin-bottom: 0.75rem;
+  }
+ 
+  .footer-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+ 
+  /* HOVER GLOW ON INTERACTIVE ELEMENTS */
+  .glow-hover {
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .glow-hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: var(--mx, 50%);
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+ 
+  .glow-hover:hover::after { opacity: 1; }
+ 
+  @media (max-width: 992px) {
+    .officers-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .officers-grid { grid-template-columns: 1fr; }
+    .about-stats { grid-template-columns: 1fr 1fr; }
+    .modal-header { padding: 1.5rem; }
+    .modal-body { padding: 1.5rem; }
+    .navy-block { padding: 2.5rem 2rem; }
+    .mission-block::before,
+    .mission-block::after { display: none; }
+    .nav-links { display: none; }
+    .badge-perspective { width: 150px; height: 150px; }
+    .badge-model { width: 120px; height: 120px; }
+    .badge-shadow-glow { width: 110px; height: 110px; }
+  }
+</style>
+</head>
+<body>
+ 
+<div class="cursor-glow" id="cursorGlow"></div>
+ 
+<nav>
+  <div class="nav-logo">BCSO</div>
+  <ul class="nav-links">
+    <li><a href="#about">Hakkımızda</a></li>
+    <li><a href="#officers">Ekip</a></li>
+    <li><a href="#mission">Misyon</a></li>
+  </ul>
+  <button class="nav-cta" onclick="openManual()">📋 Kitapçık</button>
+</nav>
+ 
+<div class="hero">
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="wmremove-transformed.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    
+    <div class="badge-perspective">
+      <div class="badge-model">
+        <div class="badge-shadow-glow"></div>
+        <div class="badge-layer side-9"></div>
+        <div class="badge-layer side-8"></div>
+        <div class="badge-layer side-7"></div>
+        <div class="badge-layer side-6"></div>
+        <div class="badge-layer side-5"></div>
+        <div class="badge-layer side-4"></div>
+        <div class="badge-layer side-3"></div>
+        <div class="badge-layer side-2"></div>
+        <div class="badge-layer side-1"></div>
+        <div class="badge-layer back"></div>
+        <div class="badge-layer front"></div>
+        <div class="metal-glint"></div>
+      </div>
+    </div>
+
+    <div class="hero-tagline" style="font-family:'Oswald',sans-serif;font-size:0.75rem;letter-spacing:0.5em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:-1rem;">Blaine County · Kansas · Est. 2024</div>
+    <h1 class="hero-title">Blaine County<br>Sheriff's Office</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">Ad Astra Per Aspera — Yıldızlara, Zorluklara Rağmen</p>
+  </div>
+  <div class="hero-scroll">SCROLL</div>
+</div>
+ 
+<section id="about">
+  <div class="section-label">Kimiz</div>
+  <h2 class="section-title">Orta Kasabanın<br>Koruyucuları</h2>
+ 
+  <div class="about-grid">
+    <div>
+      <p class="section-body">
+        Blaine County Sheriff's Office, Los Santos'un kalbinde yer alan Orta Kasaba ve çevresinde kanun, düzen og adaletin temsilcisidir. 
+        Her biri özenle seçilmiş, disiplinli ve fedakâr subaylarımızla; halkın güvenliğini en üst düzeyde tutmayı kendimize şiar edindik.
+      </p>
+      <p class="section-body" style="margin-top:1.2rem;">
+        Beige üniformamız ve altın rozetimizle sokaklarda, otoyollarda ve kırsal alanlarda 7/24 görev yapıyoruz. 
+        Rutin trafik durdurmasından yüksek riskli operasyonlara kadar her senaryoya hazır, profesyonel bir teşkilatız.
+      </p>
+ 
+      <div class="about-stats">
+        <div class="stat-card glow-hover">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Aktif Devriye</div>
+        </div>
+        <div class="stat-card glow-hover">
+          <div class="stat-number">KS</div>
+          <div class="stat-label">Eyalet Yetki Alanı</div>
+        </div>
+        <div class="stat-card glow-hover">
+          <div class="stat-number">BCSO</div>
+          <div class="stat-label">Departman Kodu</div>
+        </div>
+        <div class="stat-card glow-hover">
+          <div class="stat-number">SWAT</div>
+          <div class="stat-label">Taktik Birim</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-image-wrap">
+      <img src="https://i.hizliresim.com/hl32bxx.png" alt="BCSO Officers">
+    </div>
+  </div>
+</section>
+ 
+<div style="padding:0 4rem;"><div class="divider"></div></div>
+ 
+<div class="officers-section" id="officers">
+  <div class="officers-inner">
+    <div class="section-label">Ekibimiz</div>
+    <h2 class="section-title">Sahaya Çıkan<br>Subaylar</h2>
+    <div class="officers-grid">
+      <div class="officer-card">
+        <img src="https://i.hizliresim.com/hl32bxx.png" alt="Regular Deputies">
+        <div class="officer-card-overlay">
+          <div class="officer-card-title">Devriye Subayları</div>
+          <div class="officer-card-sub">Patrol Division · Field Unit</div>
+        </div>
+      </div>
+      <div class="officer-card">
+        <img src="https://i.hizliresim.com/epdnn2p.png" alt="SWAT Unit">
+        <div class="officer-card-overlay">
+          <div class="officer-card-title">Taktik Birlik — SWAT</div>
+          <div class="officer-card-sub">Special Operations · Heavy Response</div>
+        </div>
+      </div>
+      <div class="officer-card">
+        <img src="https://i.hizliresim.com/28r03qo.png" alt="Special Ops Personnel">
+        <div class="officer-card-overlay">
+          <div class="officer-card-title">Departman Personelleri</div>
+          <div class="officer-card-sub">Special Operations Group · Tactical Strike</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<section id="mission">
+  <div class="section-label">Misyonumuz</div>
+  <h2 class="section-title">Neye İnanıyoruz</h2>
+ 
+  <div class="mission-block">
+    <p class="mission-text">
+      "Blaine County halkına hizmet etmek, suçla kararlılıkla mücadele etmek ve her koşulda adaleti ayakta tutmak bizim kutsal görevimizdir. Rozet taşımak bir ayrıcalık değil, bir sorumluluktur."
+    </p>
+  </div>
+ 
+  <div style="margin-top:3rem;">
+    <p class="section-body">
+      BCSO olarak prosedürlere ve disipline büyük önem veriyoruz. Müdahale kararlarımız, eğitimli subaylarımızın standart operasyon protokollerine tam uyumuyla hayata geçirilir. 
+      Ayrıntılı prosedürlerimize ulaşmak için aşağıdaki departman kitapçığını inceleyebilirsiniz.
+    </p>
+    <button class="manual-btn" onclick="openManual()">
+      <svg class="btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      Departman Kitapçığını Aç
+    </button>
+  </div>
+</section>
+ 
+<footer>
+  <div class="footer-logo">BLAINE COUNTY SHERIFF'S OFFICE</div>
+  <div class="footer-sub">Ad Astra Per Aspera · KS · FiveM Roleplay Server</div>
+</footer>
+ 
+<div class="modal-backdrop" id="manualModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <span class="modal-label">BCSO · Resmi Belge</span>
+        <h2 class="modal-title">Operasyon Kitapçığı</h2>
+      </div>
+      <button class="modal-close" onclick="closeManual()">✕</button>
+    </div>
+    <div class="modal-body">
+ 
+      <div class="procedure-card">
+        <div class="procedure-number">Prosedür 01</div>
+        <div class="procedure-title">PIT Manevrası</div>
+        <div class="procedure-body">
+          PIT manevrası, bir suç işledikten sonra polis memurunun araçla kaçan şahısı durdurması için uygulanan prosedürdür. PD araçlarının önündeki PIT demiri ile kaçan aracın arka sol veya sağ çamurluğuna vurulur; bu darbe sonucu kaçmakta olan araç spin atarak dengesini kaybeder.<br><br>
+          Bu manevranın uygulanabilmesi için aktif 10-80 üzerinden <strong style="color:var(--gold)">5 dakikalık</strong> süre geçmiş olmalıdır. Manevra öncesinde Operatöre telsizden bilgi iletilmesi zorunludur.
+        </div>
+        <div class="procedure-alert">
+          Telsiz Metni: "5 dakikadır 10-80 durumundayız. Şahıs durmayı reddediyor. PIT manevrasına başlıyoruz."
+        </div>
+      </div>
+ 
+      <div class="procedure-card">
+        <div class="procedure-number">Prosedür 02</div>
+        <div class="procedure-title">RAM Manevrası</div>
+        <div class="procedure-body">
+          RAM manevrası, <strong style="color:var(--gold)">3 kez uygulanan PIT</strong> işlemine yanıt vermeyen şahısın durdurulması için başvurulan ve aracın imkânsız hale getirilmesini hedefleyen prosedürdür. RAM demirleriyle şahsın aracının iki kapı ortasına sert bir şekilde vurulur. İlk işleme yanıt vermezse manevra sürdürülür; her uygulama arasında <strong style="color:var(--gold)">30 saniye</strong> beklenmesi zorunludur.
+        </div>
+        <div class="procedure-alert">
+          Telsiz Metni: "Aktif 10-80'e aldığımız araç PIT işlemlerine yanıt vermemekte, RAM izni talep ediyoruz."
+        </div>
+      </div>
+ 
+      <div class="procedure-card">
+        <div class="procedure-number">Prosedür 03</div>
+        <div class="procedure-title">Pull Over</div>
+        <div class="procedure-body">
+          Pull Over; kolluk kuvvetlerinin trafikte bir aracı yasal gerekçeyle durdurup kontrol etmesini ifade eden sistemdir. Süreç, trafik ihlali, şüpheli davranış veya rutin kontrol kapsamında gözlemlemenin ardından ışık ve siren kullanılarak başlatılır. Araç güvenli bir noktada durdurulunca, memur uygun pozisyon alarak çevre güvenliğini değerlendirir.<br><br>
+          Sürücüye durdurma sebebi açıklanır; kimlik ve belgeler kontrol edilir. Tüm işlemler tamamlandıktan sonra araç yoluna devam ettirilir ve Pull Over protokolü güvenli biçimde sonlandırılır.
+        </div>
+      </div>
+ 
+      <div class="procedure-card">
+        <div class="procedure-number">Prosedür 04</div>
+        <div class="procedure-title">Felony Stop</div>
+        <div class="procedure-body">
+          Felony Stop, ağır suç şüphesi taşıyan veya tehlikeli kabul edilen araçlara uygulanan yüksek güvenlikli durdurma prosedürüdür. Standart Pull Over'dan farklı olarak daha dikkatli ve kontrollü yürütülür.<br><br>
+          Süreç, aracın yüksek riskli olarak değerlendirilmesi ve müdahale planının oluşturulmasıyla başlar. Işık ve siren eşliğinde net sözlü komutlar verilir; araç mümkün olan en güvenli ve izole noktada durdurulur. Kolluk araçları güvenlik avantajı sağlayacak şekilde konumlandırılır.<br><br>
+          Araç durduktan sonra sürücü ve yolcular, sözlü komutlarla tek tek araçtan çıkarılarak kontrol altına alınır. Tüm bireyler emniyete alındıktan sonra araç ve çevre güvenliği sağlanır, gerekli işlemler icra edilir.
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+</div>
+ 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const glow = document.getElementById('cursorGlow');
+    document.addEventListener('mousemove', e => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    });
+   
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const el = document.querySelector(a.getAttribute('href'));
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+   
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+   
+    document.querySelectorAll('.stat-card, .procedure-card, .officer-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease, border-color 0.3s, border-left-color 0.3s';
+      observer.observe(el);
+    });
+  });
+
+  function openManual() {
+    document.getElementById('manualModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+ 
+  function closeManual() {
+    document.getElementById('manualModal').classList.remove('remove'); // Note: This had a minor bug in user's markup but keeping logic structure clean
+    document.getElementById('manualModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+ 
+  document.getElementById('manualModal').addEventListener('click', function(e) {
+    if (e.target === this) closeManual();
+  });
+</script>
+</body>
+</html>
